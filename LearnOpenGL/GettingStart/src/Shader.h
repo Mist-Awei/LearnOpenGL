@@ -15,7 +15,7 @@ class Shader
 {
 private:
 	unsigned int ID; // 着色器程序ID
-	std::unordered_map<std::string, unsigned int> UniformLocationCache;
+	std::unordered_map<std::string, int> UniformLocationCache;
 	void checkCompileErrors(GLuint shader, std::string type);
 public:
 	//构造器读取并构建着色器
@@ -41,7 +41,7 @@ public:
 	void setMat2(const std::string& name, const glm::mat2& mat);
 	void setMat3(const std::string& name, const glm::mat3& mat);
 	void setMat4(const std::string& name, const glm::mat4& mat);
-	unsigned int GetUniformLocation(const std::string& name);
+	int GetUniformLocation(const std::string& name);
 };
 
 #endif // !SHADER_H
