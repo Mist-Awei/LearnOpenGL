@@ -11,20 +11,19 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "Camera.h"
-#include "Renderer.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height); //»Øµ÷º¯Êı£¬´°¿Ú´óĞ¡±»µ÷ÕûÊ±Ò²¶ÔÊÓ¿Úµ÷Õû
-void processInput(GLFWwindow* window); // ´¦Àí°´¼üÊäÈë
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn); // Êó±êÎ»ÖÃ»Øµ÷º¯Êı
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset); // Êó±ê¹öÂÖ»Øµ÷º¯Êı,yoffset´ú±í¹öÂÖÊúÖ±¹ö¶¯µÄ´óĞ¡
+void framebuffer_size_callback(GLFWwindow* window, int width, int height); //å›è°ƒå‡½æ•°ï¼Œçª—å£å¤§å°è¢«è°ƒæ•´æ—¶ä¹Ÿå¯¹è§†å£è°ƒæ•´
+void processInput(GLFWwindow* window); // å¤„ç†æŒ‰é”®è¾“å…¥
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn); // é¼ æ ‡ä½ç½®å›è°ƒå‡½æ•°
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset); // é¼ æ ‡æ»šè½®å›è°ƒå‡½æ•°,yoffsetä»£è¡¨æ»šè½®ç«–ç›´æ»šåŠ¨çš„å¤§å°
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 float mixValue = 0.5;
 // timing
-float deltaTime = 0.0f; // µ±Ç°Ö¡ÓëÉÏÒ»Ö¡µÄÊ±¼ä²î
-float lastFrame = 0.0f; // ÉÏÒ»Ö¡µÄÊ±¼ä
+float deltaTime = 0.0f; // å½“å‰å¸§ä¸ä¸Šä¸€å¸§çš„æ—¶é—´å·®
+float lastFrame = 0.0f; // ä¸Šä¸€å¸§çš„æ—¶é—´
 // carmera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float last_X = SCR_WIDTH / 2.0f;
@@ -33,40 +32,40 @@ bool firstMouse = true;
 
 int main()
 {
-    glfwInit();// ³õÊ¼»¯GLFW
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);// ÉèÖÃGLFWÖ÷°æ±¾ºÅÎª3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);// ÉèÖÃGLFW´Î°æ±¾ºÅÎª3
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// Ê¹ÓÃºËĞÄÄ£Ê½
+    glfwInit();// åˆå§‹åŒ–GLFW
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);// è®¾ç½®GLFWä¸»ç‰ˆæœ¬å·ä¸º3
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);// è®¾ç½®GLFWæ¬¡ç‰ˆæœ¬å·ä¸º3
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);// ä½¿ç”¨æ ¸å¿ƒæ¨¡å¼
     
-    //´´½¨Ò»¸ö´°¿Ú¶ÔÏó
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);// ÉèÖÃ´°¿Ú¿í¡¢¸ß¡¢Ãû³Æ
+    //åˆ›å»ºä¸€ä¸ªçª—å£å¯¹è±¡
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);// è®¾ç½®çª—å£å®½ã€é«˜ã€åç§°
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
-    // ½«´´½¨µÄ´°¿ÚÉÏÏÂÎÄÉèÖÃÎªµ±Ç°Ïß³ÌµÄÖ÷ÉÏÏÂÎÄ
+    // å°†åˆ›å»ºçš„çª—å£ä¸Šä¸‹æ–‡è®¾ç½®ä¸ºå½“å‰çº¿ç¨‹çš„ä¸»ä¸Šä¸‹æ–‡
     glfwMakeContextCurrent(window);
-    // GLADÊÇÓÃÀ´¹ÜÀíOpenGLµÄº¯ÊıÖ¸ÕëµÄ£¬µ÷ÓÃÈÎºÎOpenGLº¯Êı¶¼ĞèÒª³õÊ¼»¯GLAD
-    // ¸øGLAD´«ÈëÓÃÀ´¼ÓÔØÏµÍ³Ïà¹ØµÄOpenGLº¯ÊıÖ¸ÕëµØÖ·µÄº¯Êı£¬GLFW¸øÎÒÃÇµÄÊÇglfwGetProcAddress
+    // GLADæ˜¯ç”¨æ¥ç®¡ç†OpenGLçš„å‡½æ•°æŒ‡é’ˆçš„ï¼Œè°ƒç”¨ä»»ä½•OpenGLå‡½æ•°éƒ½éœ€è¦åˆå§‹åŒ–GLAD
+    // ç»™GLADä¼ å…¥ç”¨æ¥åŠ è½½ç³»ç»Ÿç›¸å…³çš„OpenGLå‡½æ•°æŒ‡é’ˆåœ°å€çš„å‡½æ•°ï¼ŒGLFWç»™æˆ‘ä»¬çš„æ˜¯glfwGetProcAddress
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    // ×¢²áº¯Êı£¬¸æËßGLFWÃ¿µ±´°¿Úµ÷Õû´óĞ¡µ÷ÓÃ´Ëº¯Êı
+    // æ³¨å†Œå‡½æ•°ï¼Œå‘Šè¯‰GLFWæ¯å½“çª—å£è°ƒæ•´å¤§å°è°ƒç”¨æ­¤å‡½æ•°
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    // ×¢²áÊó±êÒÆ¶¯µÄ»Øµ÷º¯Êı
+    // æ³¨å†Œé¼ æ ‡ç§»åŠ¨çš„å›è°ƒå‡½æ•°
     glfwSetCursorPosCallback(window, mouse_callback);
-    // ×¢²áÊó±ê¹öÂÖµÄ»Øµ÷º¯Êı
+    // æ³¨å†Œé¼ æ ‡æ»šè½®çš„å›è°ƒå‡½æ•°
     glfwSetScrollCallback(window, scroll_callback);
-    // Òş²Ø¹â±ê²¢²¶×½£¬½¹µãÔÚ³ÌĞòÉÏ£¬¹â±êÓ¦Í£ÁôÔÚ´°¿ÚÖĞ
+    // éšè—å…‰æ ‡å¹¶æ•æ‰ï¼Œç„¦ç‚¹åœ¨ç¨‹åºä¸Šï¼Œå…‰æ ‡åº”åœç•™åœ¨çª—å£ä¸­
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     {
-        //´´½¨¶¥µãÊı×é£¨±ê×¼»¯Éè±¸×ø±ê£©
+        //åˆ›å»ºé¡¶ç‚¹æ•°ç»„ï¼ˆæ ‡å‡†åŒ–è®¾å¤‡åæ ‡ï¼‰
         float vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -110,7 +109,7 @@ int main()
         -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
         };
-        // ÊÀ½ç×ø±êÎ»ÖÃ
+        // ä¸–ç•Œåæ ‡ä½ç½®
         glm::vec3 cubePositions[] = {
         glm::vec3(0.0f,  0.0f,  0.0f),
         glm::vec3(2.0f,  5.0f, -15.0f),
@@ -168,7 +167,7 @@ int main()
         -0.5f,  0.5f, -0.5f,
         };
         */
-        // Ë÷ÒıÊı×é
+        // ç´¢å¼•æ•°ç»„
         unsigned int indices[] = {
             0, 1, 3,
             1, 2, 3
@@ -177,25 +176,25 @@ int main()
         // GLCall(glEnable(GL_BLEND));
         // GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-        // ´´½¨¶¥µã»º³å¶ÔÏóVBO
+        // åˆ›å»ºé¡¶ç‚¹ç¼“å†²å¯¹è±¡VBO
         VertexBuffer VBO(vertices, 36 * 5 * sizeof(float));
-        // ´´½¨¶¥µãÊı×é¶ÔÏóVAO
+        // åˆ›å»ºé¡¶ç‚¹æ•°ç»„å¯¹è±¡VAO
         VertexArray VAO;
-        // °ó¶¨VAOºÍVBO
+        // ç»‘å®šVAOå’ŒVBO
         VAO.Bind();
         VBO.Bind();
 
-        // ¶¥µãÊı×é²¼¾Ö
+        // é¡¶ç‚¹æ•°ç»„å¸ƒå±€
         VertexBufferLayout layout;
-        layout.Push<float>(3); // ¶¥µã×ø±ê
-        layout.Push<float>(2); // ÎÆÀí×ø±ê
+        layout.Push<float>(3); // é¡¶ç‚¹åæ ‡
+        layout.Push<float>(2); // çº¹ç†åæ ‡
         VAO.AddBuffer(VBO, layout);
 
         
-        //´´½¨ÔªËØ»º³å¶ÔÏóEBO
+        //åˆ›å»ºå…ƒç´ ç¼“å†²å¯¹è±¡EBO
         ElementBuffer EBO(indices, 6);
         
-        // ´´½¨×ÅÉ«Æ÷shader
+        // åˆ›å»ºç€è‰²å™¨shader
         Shader ourShader("./shader/vertex.glsl", "./shader/fragment.glsl");
         ourShader.Use();
         ourShader.setInt("texture1", 0);
@@ -205,34 +204,34 @@ int main()
         Texture texture2("./texture/awesomeface.png", GL_RGBA);
 
         // VAO.Unbind(); 
-        VBO.Unbind(); // µ÷ÓÃglVertexAttribPointer½«VBO×¢²áÎª¶¥µãÊôĞÔµÄ°ó¶¨¶¥µã»º³å¶ÔÏóºó¿ÉÒÔ½â³ı°ó¶¨
+        VBO.Unbind(); // è°ƒç”¨glVertexAttribPointerå°†VBOæ³¨å†Œä¸ºé¡¶ç‚¹å±æ€§çš„ç»‘å®šé¡¶ç‚¹ç¼“å†²å¯¹è±¡åå¯ä»¥è§£é™¤ç»‘å®š
         // EBO.Unbind();
 
-        glEnable(GL_DEPTH_TEST); // ¿ªÆôÉî¶È²âÊÔ
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Ö»»æÖÆÏß¶Î
-        // äÖÈ¾Ñ­»·
-        while (!glfwWindowShouldClose(window)) // ¼ì²éGLFWÊÇ·ñÒªÇó±»ÍË³ö
+        glEnable(GL_DEPTH_TEST); // å¼€å¯æ·±åº¦æµ‹è¯•
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // åªç»˜åˆ¶çº¿æ®µ
+        // æ¸²æŸ“å¾ªç¯
+        while (!glfwWindowShouldClose(window)) // æ£€æŸ¥GLFWæ˜¯å¦è¦æ±‚è¢«é€€å‡º
         {
-            // ¼ÆËãÖ¡Ê±¼ä
-            float timeValue = glfwGetTime(); // »ñÈ¡ÔËĞĞµÄÃëÊı
+            // è®¡ç®—å¸§æ—¶é—´
+            float timeValue = glfwGetTime(); // è·å–è¿è¡Œçš„ç§’æ•°
             float currentFrame = timeValue;
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
 
-            // ¼ì²â²¢´¦Àí°´¼üÊäÈë
+            // æ£€æµ‹å¹¶å¤„ç†æŒ‰é”®è¾“å…¥
             processInput(window);
 
-            // äÖÈ¾
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // ÉèÖÃÇå¿ÕÆÁÄ»ËùĞèÒªµÄÑÕÉ«
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Çå³ıÑÕÉ«»º´æºÍÉî¶È»º´æ
+            // æ¸²æŸ“
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // è®¾ç½®æ¸…ç©ºå±å¹•æ‰€éœ€è¦çš„é¢œè‰²
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // æ¸…é™¤é¢œè‰²ç¼“å­˜å’Œæ·±åº¦ç¼“å­˜
 
             texture1.Bind();
             texture2.Bind(1);
 
             glm::mat4 view = camera.GetViewMatrix();
             glm::mat4 proj = glm::mat4(1.0f);
-            // glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f); // ÕıÉäÍ¶Ó°Æ½½ØÍ·Ìå×ó£¬ÓÒ£¬µ×²¿£¬¶¥²¿£¬½üÆ½Ãæ£¬Ô¶Æ½Ãæ
-            proj = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f); // Í¸ÊÓÆ½½ØÍ·Ìåfov£¬¿í¸ß±È£¬½üÆ½Ãæ£¬Ô¶Æ½Ãæ
+            // glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f); // æ­£å°„æŠ•å½±å¹³æˆªå¤´ä½“å·¦ï¼Œå³ï¼Œåº•éƒ¨ï¼Œé¡¶éƒ¨ï¼Œè¿‘å¹³é¢ï¼Œè¿œå¹³é¢
+            proj = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f); // é€è§†å¹³æˆªå¤´ä½“fovï¼Œå®½é«˜æ¯”ï¼Œè¿‘å¹³é¢ï¼Œè¿œå¹³é¢
             ourShader.setFloat("MixValue", mixValue);
             ourShader.setMat4("view", view);
             ourShader.setMat4("projection", proj);
@@ -253,23 +252,23 @@ int main()
                 glDrawArrays(GL_TRIANGLES, 0, 36);
             }
             
-            // »æÖÆµÄÍ¼ÔªÀàĞÍ£¬¶¥µãÊı×éµÄÆğÊ¼Ë÷Òı£¬»æÖÆ¶¥µãÊı
+            // ç»˜åˆ¶çš„å›¾å…ƒç±»å‹ï¼Œé¡¶ç‚¹æ•°ç»„çš„èµ·å§‹ç´¢å¼•ï¼Œç»˜åˆ¶é¡¶ç‚¹æ•°
             // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-            glfwSwapBuffers(window); //½»»»ÑÕÉ«»º³å£¬Ëü´æ´¢×ÅGLFW´°¿ÚÃ¿¸öÏñËØÑÕÉ«µÄ´ó»º³å
-            // Ë«»º³å£¬Ç°»º³å±£´æ²¢ÏÔÊ¾×Å×îÖÕÊä³öµÄÍ¼Ïñ£¬ËùÓĞµÄäÖÈ¾Ö¸ÁîÔòÔÚºó»º³åÉÏ»æÖÆ¡£
-            glfwPollEvents(); // º¯Êı¼ì²éÓĞÃ»ÓĞ´¥·¢ÊÂ¼ş£¬Êó±ê¼üÅÌ¡¢¸üĞÂ´°¿Ú×´Ì¬£¬²¢µ÷ÓÃ¶ÔÓ¦µÄ»Øµ÷º¯Êı
+            glfwSwapBuffers(window); //äº¤æ¢é¢œè‰²ç¼“å†²ï¼Œå®ƒå­˜å‚¨ç€GLFWçª—å£æ¯ä¸ªåƒç´ é¢œè‰²çš„å¤§ç¼“å†²
+            // åŒç¼“å†²ï¼Œå‰ç¼“å†²ä¿å­˜å¹¶æ˜¾ç¤ºç€æœ€ç»ˆè¾“å‡ºçš„å›¾åƒï¼Œæ‰€æœ‰çš„æ¸²æŸ“æŒ‡ä»¤åˆ™åœ¨åç¼“å†²ä¸Šç»˜åˆ¶ã€‚
+            glfwPollEvents(); // å‡½æ•°æ£€æŸ¥æœ‰æ²¡æœ‰è§¦å‘äº‹ä»¶ï¼Œé¼ æ ‡é”®ç›˜ã€æ›´æ–°çª—å£çŠ¶æ€ï¼Œå¹¶è°ƒç”¨å¯¹åº”çš„å›è°ƒå‡½æ•°
         }
     }
-    // äÖÈ¾½áÊøĞèÒªÕıÈ·µÄÉ¾³ıºÍÊÍ·Å·ÖÅäµÄËùÓĞ×ÊÔ´£¬µ÷ÓÃglfwTerminateº¯Êı
+    // æ¸²æŸ“ç»“æŸéœ€è¦æ­£ç¡®çš„åˆ é™¤å’Œé‡Šæ”¾åˆ†é…çš„æ‰€æœ‰èµ„æºï¼Œè°ƒç”¨glfwTerminateå‡½æ•°
     glfwTerminate();
     return 0;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // ÉèÖÃÊÓ¿ÚµÄ³ß´ç
-    glViewport(0, 0, width, height); //Ç°Á½¸ö²ÎÊı¿ØÖÆ´°¿Ú×óÏÂ½ÇµÄÎ»ÖÃ£¬ºóÁ½¸ö²ÎÊı¿ØÖÆäÖÈ¾´°¿ÚµÄ¿í¶ÈºÍ¸ß¶È£¨ÏñËØ£©
+    // è®¾ç½®è§†å£çš„å°ºå¯¸
+    glViewport(0, 0, width, height); //å‰ä¸¤ä¸ªå‚æ•°æ§åˆ¶çª—å£å·¦ä¸‹è§’çš„ä½ç½®ï¼Œåä¸¤ä¸ªå‚æ•°æ§åˆ¶æ¸²æŸ“çª—å£çš„å®½åº¦å’Œé«˜åº¦ï¼ˆåƒç´ ï¼‰
 }
 
 void processInput(GLFWwindow* window)
@@ -323,7 +322,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
         firstMouse = false;
     }
     float xoffset = xpos - last_X;
-    float yoffset = last_Y - ypos; // y×ø±êÊÇ´ÓÆÁÄ»ÏÂµ½ÉÏ
+    float yoffset = last_Y - ypos; // yåæ ‡æ˜¯ä»å±å¹•ä¸‹åˆ°ä¸Š
     last_X = xpos;
     last_Y = ypos;
 
