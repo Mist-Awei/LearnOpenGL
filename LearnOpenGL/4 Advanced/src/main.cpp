@@ -483,16 +483,36 @@ int main()
 		GLCall(glDisable(GL_CULL_FACE)); // 关闭面剔除
 
 		// nanosuit_reflection
-		explodeShader.Use();
-		explodeShader.setVec3("cameraPos", camera.Position);
-		explodeShader.setFloat("time", timeValue);
-		normVAO.Bind();
+		mappingShader.Use(); // 环境映射
 		skyboxTexture.CubeBind(3);
+		mappingShader.setVec3("cameraPos", camera.Position);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, -0.5f, 1.0f));
+		model = glm::scale(model, glm::vec3(0.06f, 0.06f, 0.06f));
+		mappingShader.setMat4("model", model);
+		nanosuit_reflection.Draw(mappingShader);
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(1.0f, -0.5f, 1.0f));
+		model = glm::scale(model, glm::vec3(0.06f, 0.06f, 0.06f));
+		mappingShader.setMat4("model", model);
+		nanosuit_reflection.Draw(mappingShader);
+
+		explodeShader.Use(); // 爆炸效果
+		explodeShader.setVec3("cameraPos", camera.Position);
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.5f, -0.5f, 1.0f));
-		model = glm::scale(model, glm::vec3(0.15f, 0.15f, 0.15f));
+		model = glm::scale(model, glm::vec3(0.06f, 0.06f, 0.06f));
+		explodeShader.setFloat("time", timeValue);
 		explodeShader.setMat4("model", model);
 		nanosuit_reflection.Draw(explodeShader);
+
+		normalShader.Use();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(1.0f, -0.5f, 1.0f));
+		model = glm::scale(model, glm::vec3(0.06f, 0.06f, 0.06f));
+		normalShader.setMat4("model", model);
+		nanosuit_reflection.Draw(normalShader);
 
 		shader.Use();
 		// 绘制草
